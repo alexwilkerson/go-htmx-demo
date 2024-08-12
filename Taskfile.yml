@@ -5,3 +5,8 @@ tasks:
     desc: Watches go files and runs the server
     cmds:
       - air
+
+  templ-watch:
+    desc: Watches and generates templ files
+    cmds:
+      - templ generate --watch --proxy=http://localhost:3000 --open-browser=false -v

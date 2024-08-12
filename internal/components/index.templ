@@ -1,0 +1,28 @@
+package components
+
+script printToConsole(s string) {
+  console.log(s);
+}
+
+templ Index(user string) {
+	@Base("htmx Demo") {
+		<h1>htmx Demo</h1>
+		@Hello(user)
+		<div x-data="{ error: false }">
+			<button
+				hx-get="/button"
+				hx-swap="innerHTML"
+				hx-target="#count"
+				hx-trigger="load, click"
+				hx-indicator="#bars"
+				x-on:htmx:response-error="error = true"
+			>
+				Click me!
+			</button>
+			<img id="bars" class="htmx-indicator" src="/static/img/bars.svg"/>
+			<p id="count"></p>
+			<p x-cloak x-show="error">An error occurred!</p>
+			@printToConsole("Running JavaScript from a template!")
+		</div>
+	}
+}

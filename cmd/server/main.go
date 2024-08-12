@@ -7,6 +7,7 @@ import (
 	"time"
 
 	"github.com/alexedwards/scs/v2"
+	"github.com/alexwilkerson/go-htmx-demo/internal/components"
 	petname "github.com/dustinkirkland/golang-petname"
 )
 
@@ -18,7 +19,13 @@ func main() {
 	mux := http.NewServeMux()
 
 	mux.HandleFunc("GET /", func(w http.ResponseWriter, r *http.Request) {
-		http.ServeFile(w, r, "./templates/index.html")
+		user := sessionManager.GetString(r.Context(), "user")
+		if user == "" {
+			user = petname.Generate(2, "-")
+			sessionManager.Put(r.Context(), "user", user)
+		}
+
+		components.Index(user).Render(r.Context(), w)
 	})
 
 	mux.HandleFunc("GET /button", func(w http.ResponseWriter, r *http.Request) {
