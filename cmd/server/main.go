@@ -4,22 +4,39 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"time"
+
+	"github.com/alexedwards/scs/v2"
+	petname "github.com/dustinkirkland/golang-petname"
 )
 
 func main() {
 	count := 0
+	sessionManager := scs.New()
+	sessionManager.Lifetime = 24 * time.Hour
 
-	http.HandleFunc("GET /", func(w http.ResponseWriter, r *http.Request) {
+	mux := http.NewServeMux()
+
+	mux.HandleFunc("GET /", func(w http.ResponseWriter, r *http.Request) {
 		http.ServeFile(w, r, "./templates/index.html")
 	})
 
-	http.HandleFunc("GET /button", func(w http.ResponseWriter, r *http.Request) {
+	mux.HandleFunc("GET /button", func(w http.ResponseWriter, r *http.Request) {
+		user := sessionManager.GetString(r.Context(), "user")
+		if user == "" {
+			user = petname.Generate(2, "-")
+			sessionManager.Put(r.Context(), "user", user)
+		}
+
 		count++
 
-		w.Write([]byte(fmt.Sprintf("<p>Count: %d</p>", count)))
+		sessionCount := sessionManager.GetInt(r.Context(), "count")
+		sessionManager.Put(r.Context(), "count", sessionCount+1)
+
+		w.Write([]byte(fmt.Sprintf("<p>User: %s</p><p>Global Count: %d</p><p>Session Count: %d</p>", user, count, sessionCount+1)))
 	})
 
-	http.Handle("GET /static/*",
+	mux.Handle("GET /static/*",
 		http.StripPrefix("/static/",
 			http.FileServer(
 				http.Dir("./static"),
@@ -27,5 +44,5 @@ func main() {
 		),
 	)
 
-	log.Fatal(http.ListenAndServe(":3000", nil))
+	log.Fatal(http.ListenAndServe(":3000", sessionManager.LoadAndSave(mux)))
 }

@@ -4,19 +4,26 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <script src="/static/scripts/htmx.min.js"></script>
+  <script defer src="/static/scripts/alpine.min.js"></script>
   <title>htmx Demo</title>
 </head>
 <body>
   <h1>htmx Demo</h1>
   <p>Hello, New York Times!</p>
-  <button
-    hx-get="/button"
-    hx-swap="innerHTML"
-    hx-target="#count"
-    hx-trigger="load, click"
-  >
-    Click me!
-  </button>
-  <p id="count"></p>
+  <div x-data="{ error: false }">
+    <button
+      hx-get="/button"
+      hx-swap="innerHTML"
+      hx-target="#count"
+      hx-trigger="load, click"
+      hx-indicator="#bars"
+      x-on:htmx:response-error="error = true"
+    >
+      Click me!
+    </button>
+    <img id="bars" class="htmx-indicator" src="/static/img/bars.svg" />
+    <p id="count"></p>
+    <p x-show="error">An error occurred!</p>
+  </div>
 </body>
 </html>
