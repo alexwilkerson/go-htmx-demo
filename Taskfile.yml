@@ -1,0 +1,7 @@
+version: '3'
+
+tasks:
+  watch:
+    desc: Watches go files and runs the server
+    cmds:
+      - air
