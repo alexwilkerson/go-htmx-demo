@@ -1,0 +1,46 @@
+package components
+
+import "time"
+
+type Message struct {
+	ID      int
+	User    string
+	Message string
+	Time    time.Time
+}
+
+templ Chat() {
+	<h2>Chat</h2>
+	<form
+		hx-post="/chat"
+		hx-swap="none"
+		hx-on::after-request="this.reset()"
+	>
+		<input type="text" name="message" placeholder="Type a message..." required autocomplete="off"/>
+		<button type="submit">Send</button>
+	</form>
+}
+
+css chatWindowClass() {
+	border: 1px solid white;
+	padding: 10px;
+	margin: 10px 0;
+}
+
+templ ChatWindow(messages []Message) {
+	<div
+		hx-get="/chat"
+		hx-vars="{ window: true }"
+		hx-trigger="load delay:1s"
+		hx-swap="outerHTML"
+		class={ chatWindowClass() }
+	>
+		<ul id="chat">
+			for i := len(messages)-1; i >= 0; i-- {
+				<p>
+					{ messages[i].Time.Format("15:04:05") } { messages[i].User }: { messages[i].Message }
+				</p>
+			}
+		</ul>
+	</div>
+}

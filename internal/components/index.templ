@@ -8,6 +8,10 @@ templ Index(user string) {
 	@Base("htmx Demo") {
 		<h1>htmx Demo</h1>
 		@Hello(user)
+		<div
+			hx-get="/leaderboard"
+			hx-trigger="load, every 2s"
+		></div>
 		<div x-data="{ error: false }">
 			<button
 				hx-get="/button"
@@ -24,5 +28,7 @@ templ Index(user string) {
 			<p x-cloak x-show="error">An error occurred!</p>
 			@printToConsole("Running JavaScript from a template!")
 		</div>
+		@Chat()
+		@ChatWindow(nil)
 	}
 }

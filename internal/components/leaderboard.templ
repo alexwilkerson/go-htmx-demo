@@ -1,0 +1,42 @@
+package components
+
+import (
+	"sort"
+	"strconv"
+)
+
+templ Leaderboard(leaderboard map[string]int) {
+	<h2>Leaderboard</h2>
+	<table>
+		<thead>
+			<tr>
+				<th>Rank</th>
+				<th>Player</th>
+				<th>Score</th>
+			</tr>
+		</thead>
+		<tbody>
+			for i, player := range sortLeaderboard(leaderboard) {
+				<tr>
+					<td>{ strconv.Itoa(i + 1) }</td>
+					<td>{ player }</td>
+					<td>{ strconv.Itoa(leaderboard[player]) }</td>
+				</tr>
+			}
+		</tbody>
+	</table>
+}
+
+func sortLeaderboard(leaderboard map[string]int) []string {
+	players := make([]string, 0, len(leaderboard))
+
+	for player := range leaderboard {
+		players = append(players, player)
+	}
+
+	sort.Slice(players, func(i, j int) bool {
+		return leaderboard[players[i]] > leaderboard[players[j]]
+	})
+
+	return players
+}
